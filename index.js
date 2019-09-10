@@ -97,7 +97,7 @@ app.get("/blog/del/:id", function (req, res) {
     conn.query(sql, function (err, result) {
         if (err) throw err;
         //var_dump(result);
-        res.redirect("../list");
+        res.redirect("/blog/list");
     });
 });
 
@@ -118,14 +118,14 @@ app.post("/blog/edit/:id", upload.single('avatar'), function (req, res) {
         var sql = "UPDATE blogs set title='" + req.body.titleblog + "',typeblog_id='" + req.body.typeblog + "',dis='" + req.body.describe + "',content='" + req.body.content + "' WHERE id=" + req.params.id;
         conn.query(sql, function (err, result) {
             if (err) throw err;
-            res.redirect("../list");
+            res.redirect("/blog/list");
         });
     } else {
         var avater = req.file.originalname;
         var sql = "UPDATE blogs set title='" + req.body.titleblog + "',typeblog_id='" + req.body.typeblog + "',dis='" + req.body.describe + "',content='" + req.body.content + "',avatar='" + avater + "' WHERE id=" + req.params.id;
         conn.query(sql, function (err, result) {
             if (err) throw err;
-            res.redirect("../list");
+            res.redirect("/blog/list");
         });
     }
 
@@ -153,7 +153,7 @@ app.post("/blog/add", upload.single('avatar'), function (req, res) {
     var sql = "INSERT INTO  blogs (title,user_id,typeblog_id,avatar,dis,content,timecreate) VALUES ('" + req.body.titleblog + "',1,'" + req.body.typeblog + "','" + avater + "','" + req.body.describe + "','" + req.body.content + "','" + n + "')";
     conn.query(sql, function (err, result) {
         if (err) throw err;
-        res.redirect("list");
+        res.redirect("/blog/list");
     });
 
 });
@@ -217,57 +217,66 @@ app.get("/getblog/:id", function (req, res) {
 });
 
 app.get("/page/:id", function (req, res) {
-	var current_page = req.params.id;
-	var limit = 5;
-	var sqlpick = "SELECT * FROM blogs,typeblogs,users WHERE blogs.typeblog_id=typeblogs.id AND blogs.user_id=users.id AND  pick=1 LIMIT 1";
-	conn.query(sqlpick, function (err, result) {
-		//console.log(result);
-		var sqlrelate = "SELECT * FROM blogs,typeblogs,users WHERE blogs.typeblog_id=typeblogs.id AND blogs.user_id=users.id AND blogs.typeblog_id='" + result[0].typeblog_id + "' AND blogs.id !='" + result[0].id + "'  LIMIT 2";
-		//console.log(sqlrelate);
-		conn.query(sqlrelate, function (err, result1) {
-			var sqlnew = "SELECT * FROM blogs,typeblogs,users WHERE blogs.typeblog_id=typeblogs.id AND blogs.user_id=users.id ORDER BY timecreate DESC";
-			conn.query(sqlnew, function (err, result2) {
-				var total_page = Math.ceil(result2.length / limit);
-				if (current_page > total_page){
-					current_page = total_page;
-				}
-				else if (current_page < 1){
-					current_page = 1;
-				}
-				var start = (current_page - 1) * limit;
-				var sqlnew1 = "SELECT blogs.`id`,blogs.`title`,blogs.`content`,blogs.`avatar`,blogs.`timecreate`,blogs.`dis`,`typeblogs`.`nametypeblog`,users.`username` FROM blogs,typeblogs,users WHERE blogs.typeblog_id=typeblogs.id AND blogs.user_id=users.id ORDER BY timecreate DESC LIMIT "+start+","+limit;
+    var current_page = req.params.id;
+    var limit = 5;
+    var sqlpick = "SELECT * FROM blogs,typeblogs,users WHERE blogs.typeblog_id=typeblogs.id AND blogs.user_id=users.id AND  pick=1 LIMIT 1";
+    conn.query(sqlpick, function (err, result) {
+        //console.log(result);
+        var sqlrelate = "SELECT * FROM blogs,typeblogs,users WHERE blogs.typeblog_id=typeblogs.id AND blogs.user_id=users.id AND blogs.typeblog_id='" + result[0].typeblog_id + "' AND blogs.id !='" + result[0].id + "'  LIMIT 2";
+        //console.log(sqlrelate);
+        conn.query(sqlrelate, function (err, result1) {
+            var sqlnew = "SELECT * FROM blogs,typeblogs,users WHERE blogs.typeblog_id=typeblogs.id AND blogs.user_id=users.id ORDER BY timecreate DESC";
+            conn.query(sqlnew, function (err, result2) {
+                var total_page = Math.ceil(result2.length / limit);
+                if (current_page > total_page) {
+                    current_page = total_page;
+                } else if (current_page < 1) {
+                    current_page = 1;
+                }
+                var start = (current_page - 1) * limit;
+                var sqlnew1 = "SELECT blogs.`id`,blogs.`title`,blogs.`content`,blogs.`avatar`,blogs.`timecreate`,blogs.`dis`,`typeblogs`.`nametypeblog`,users.`username` FROM blogs,typeblogs,users WHERE blogs.typeblog_id=typeblogs.id AND blogs.user_id=users.id ORDER BY timecreate DESC LIMIT " + start + "," + limit;
 
-				conn.query(sqlnew1, function (err, result3) {
-                    res.render("page", {blogpick: result, blogrelate: result1, blognew: result3,current_page:current_page,total_page:total_page});
-				});
-			});
-		});
-	});
+                conn.query(sqlnew1, function (err, result3) {
+                    res.render("page", {
+                        blogpick: result,
+                        blogrelate: result1,
+                        blognew: result3,
+                        current_page: current_page,
+                        total_page: total_page
+                    });
+                });
+            });
+        });
+    });
 });
 app.get("/search", function (req, res) {
-	var page=req.query.search.split("?");
-	var sql = "SELECT * FROM blogs,typeblogs,users WHERE blogs.typeblog_id=typeblogs.id AND blogs.user_id=users.id AND blogs.title like '%"+ page[0]+"%'";
-	if (page[1]==undefined){
-		var current_page=0;
-	}else{
-		var current_page = page[1];
-	}
-	var limit = 5;
-	var search=page[0];
+    var page = req.query.search.split("?");
+    var sql = "SELECT * FROM blogs,typeblogs,users WHERE blogs.typeblog_id=typeblogs.id AND blogs.user_id=users.id AND blogs.title like '%" + page[0] + "%'";
+    if (page[1] == undefined) {
+        var current_page = 0;
+    } else {
+        var current_page = page[1];
+    }
+    var limit = 5;
+    var search = page[0];
 
-	conn.query(sql, function (err, result) {
-		var total_page = Math.ceil(result.length / limit);
-		if (current_page > total_page){
-			current_page = total_page;
-		}
-		else if (current_page < 1){
-			current_page = 1;
-		}
-		var start = (current_page - 1) * limit;
-		var sqlnew1 = "SELECT blogs.`id`,blogs.`title`,blogs.`content`,blogs.`avatar`,blogs.`timecreate`,blogs.`dis`,`typeblogs`.`nametypeblog`,users.`username` FROM blogs,typeblogs,users WHERE blogs.typeblog_id=typeblogs.id AND blogs.user_id=users.id and blogs.title like '%"+ page[0]+"%' ORDER BY timecreate DESC LIMIT "+start+","+limit;
-		conn.query(sqlnew1, function (err, result3) {
+    conn.query(sql, function (err, result) {
+        var total_page = Math.ceil(result.length / limit);
+        if (current_page > total_page) {
+            current_page = total_page;
+        } else if (current_page < 1) {
+            current_page = 1;
+        }
+        var start = (current_page - 1) * limit;
+        var sqlnew1 = "SELECT blogs.`id`,blogs.`title`,blogs.`content`,blogs.`avatar`,blogs.`timecreate`,blogs.`dis`,`typeblogs`.`nametypeblog`,users.`username` FROM blogs,typeblogs,users WHERE blogs.typeblog_id=typeblogs.id AND blogs.user_id=users.id and blogs.title like '%" + page[0] + "%' ORDER BY timecreate DESC LIMIT " + start + "," + limit;
+        conn.query(sqlnew1, function (err, result3) {
 
-			res.render("searchblog", {getblog: result3,current_page:current_page,total_page:total_page,search:search});
-		});
-	});
+            res.render("searchblog", {
+                getblog: result3,
+                current_page: current_page,
+                total_page: total_page,
+                search: search
+            });
+        });
+    });
 });
