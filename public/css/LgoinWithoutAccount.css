@@ -1,0 +1,102 @@
+/*//////////////////////////////////////////////////////////////////
+[ FONT ]*/
+
+@font-face {
+  font-family: Poppins-Regular;
+  src: url('../fonts/poppins/Poppins-Regular.ttf'); 
+}
+
+@font-face {
+  font-family: Poppins-Medium;
+  src: url('../fonts/poppins/Poppins-Medium.ttf'); 
+}
+
+@font-face {
+  font-family: Poppins-Bold;
+  src: url('../fonts/poppins/Poppins-Bold.ttf'); 
+}
+
+@font-face {
+  font-family: Poppins-SemiBold;
+  src: url('../fonts/poppins/Poppins-SemiBold.ttf'); 
+}
+body,html{
+	margin: 0px;
+	padding: 0px;
+}
+header{
+	background: #00904a;
+	height: 58px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+header img{
+	height: 40px;
+}
+.hearder_header{
+	display: flex;
+	align-items: center;
+}
+.fm_login{
+	width: 80%;
+	margin: 0 auto;
+}
+.fm_login form{
+	margin-top: 100px;
+}
+.fm_login form label{
+	font-family: Poppins-Regular;
+}
+.fm_login form input{
+	font-family: Poppins-Regular;
+}
+.fm_login form h6{
+	font-family: Poppins-Regular;
+	margin-bottom: 50px;
+	text-align: center;
+}
+.fm_login form h6 span{
+	font-weight: 900;
+	color: #00904a;
+}
+.btn_login{
+	background: #00904a;
+	color: #fff;
+	width: 100%;
+	margin-top: 50px;
+	font-weight: 500;
+	font-family: Poppins-Regular;
+
+}
+.fogot{
+	float: right;
+	color: #00904a;
+	font-family: Poppins-Regular;
+
+}
+.fogot:hover{
+	color: #00904a;
+}
+.register-link{
+	margin-top: 30px;
+	text-align: center;
+}
+.register-link a{
+	font-family: Poppins-Regular;
+	color: #00904a;
+	font-weight: 300;
+}
+.register-link p{
+	font-family: Poppins-Regular;
+}
+@media all and (min-width: 768px) {
+	.hearder_header{
+		display: flex;
+		align-items: center;
+	}
+	.fm_login{
+		width: 500px;
+		margin: 0 auto;
+	}
+}
